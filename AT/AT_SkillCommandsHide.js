@@ -2,7 +2,7 @@
 // AT_SkillCommandsHide.js
 //=============================================================================
 /*:
- * @plugindesc v1.0 根据技能类型ID在战斗界面隐藏指定的技能类型
+ * @plugindesc v1.00 根据技能类型ID在战斗界面隐藏指定的技能类型
  * @author ArchmageTony
  *
  * @param HideCommandSkillID
