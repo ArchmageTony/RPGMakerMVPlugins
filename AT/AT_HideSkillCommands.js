@@ -2,7 +2,7 @@
 // AT_HideSkillCommands.js
 //=============================================================================
 /*:
- * @plugindesc v1.01 根据技能类型ID在战斗界面隐藏指定的技能类型
+ * @plugindesc v1.03 根据技能类型ID在战斗界面隐藏指定的技能类型
  * @author ArchmageTony
  *
  * @param HideSkillCommandsID
@@ -55,10 +55,13 @@
  * 5、DisableSealedSkillCommands选项：当某个技能类型被某个状态封印时（非使用备注标签）是否将这个技能类型菜单变成灰色不可用，注意若上面的那个选项开启了的话这个选项就无效了，因为菜单都被隐藏了变成灰的你也看不见=、=
  *
  * 6、HideItemCommand选项：当在状态备注中使用标签隐藏物品菜单时，是直接隐藏还是使其变为灰色不可用。
- * 
+ *
  *-----------------------------------------------------------------------------
  * 更新履历
  *-----------------------------------------------------------------------------
+ * v1.03：20190902：
+ * - 修复了一些bug
+ *
  * v1.02：20190901：
  * - 增加一个额外选项用于是否隐藏角色被封印的技能类型
  * - 增加一个额外选项用于设置被封印技能菜单是隐藏还是被设置为灰色不可用
@@ -73,29 +76,28 @@
  */
 var Imported = Imported || {};
 Imported.AT_HideSkillCommands = true;
-var AT = {};
+var AT = AT || {};
 AT.parameters = PluginManager.parameters('AT_HideSkillCommands');
 AT.hideSealedSkillCommands = eval(String(AT.parameters['HideSealedSkillCommands']));
 AT.disableSealedSkillCommands = eval(String(AT.parameters['DisableSealedSkillCommands']));
 AT.hideItemCommand = eval(String(AT.parameters['HideItemCommand']));
-
+AT.hideSkillCommandIDs = JSON.parse(AT.parameters['HideSkillCommandsID'])
 /**
  * 重写添加技能菜单方法
  */
 Window_ActorCommand.prototype.addSkillCommands = function () {
-    let hSCID = JSON.parse(AT.parameters['HideSkillCommandsID']);
     var skillTypes = this._actor.addedSkillTypes();
     this._actor.states().some(function (state) {
         AT.hideSkillCommandID = [];
         //读取state里面的备注（note）并添加到hSCID中
         readObjectMeta(state, ['AT_HideCommands']).split(",").forEach(function (hCID) {
             if (hCID !== ('') && hCID !== ('Item')) {
-                hSCID.push(hCID);
+                AT.hideSkillCommandIDs.push(hCID);
             }
         });
         //去重
         let hSCIDObj = {};
-        for (let i of hSCID) {
+        for (let i of AT.hideSkillCommandIDs) {
             if (!hSCIDObj[i.toString()]) {
                 AT.hideSkillCommandID.push(i);
                 hSCIDObj[i] = 1;
